@@ -1,0 +1,17 @@
+<package>
+  <description brief="joystick">
+
+     joystick
+
+  </description>
+  <author>Elliott</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/joystick</url>
+  <depend package="roscpp"/>
+  <depend package="hovercraft"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+
