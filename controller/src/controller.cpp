@@ -3,7 +3,8 @@
 #include <hovercraft/LED.h>
 #include <hovercraft/Gyro.h>
 #include <controller/HovercraftControl.h>
-#include <math.h>
+#include <cmath>
+
 
 #define DEADZONE .15
 
@@ -63,24 +64,49 @@ void Controller::controllerCallback(const controller::HovercraftControl::ConstPt
   //Unused
   thruster.thruster6 = 0; //
 
-  if(hovercraftControl->power)
+  if(hovercraftControl->power == 1)
   { 
     //left to right 1 to -1
     //up to down 1 to -1
-    float x = (abs(hovercraftControl->x_translation) > DEADZONE) ? hovercraftControl->x_translation : 0;
-    float y = (abs(hovercraftControl->y_translation) > DEADZONE) ? hovercraftControl->y_translation : 0;
-    float rotation = (abs(hovercraftControl->rotation) > DEADZONE) ? hovercraftControl->rotation : 0;
-
-    thruster.lift = .6;
-
-    if(y>0)
+    float x = (fabs((float)hovercraftControl->x_translation) > DEADZONE) ? hovercraftControl->x_translation : 0;
+    float y = (fabs((float)hovercraftControl->y_translation) > DEADZONE) ? hovercraftControl->y_translation : 0;
+    float rotation = (fabs((float)hovercraftControl->rotation) > DEADZONE) ? hovercraftControl->rotation : 0;
+    
+    thruster.lift = .8;
+    if(x>0)
     {
-      thruster.thruster1 = y;
+       thruster.thruster1 = x*0.5;
+       thruster.thruster2 = x;
+    }
+    else if(x<0)
+    {
+       thruster.thruster1 = -x*0.5;
+       thruster.thruster3 = -x;
+    }
+
+    if(hovercraftControl->y_translation>0)
+    {
+      thruster.thruster1 += y;
     } 
     else if(y<0)
     {
-      thruster.thruster2 = abs(y);
-      thruster.thruster3 = abs(y);
+      thruster.thruster2 += fabs(y);
+      thruster.thruster3 += fabs(y);
+    }
+    
+    if(thruster.thruster1 > 1.0)
+    {
+       thruster.thruster1 = 1.0;
+    }
+    
+    if(thruster.thruster2 > 1.0)
+    {
+       thruster.thruster2 = 1.0;
+    }
+    
+    if(thruster.thruster3 > 1.0)
+    {
+       thruster.thruster3 = 1.0;
     }
     
     if(rotation>0)
@@ -89,7 +115,7 @@ void Controller::controllerCallback(const controller::HovercraftControl::ConstPt
     } 
     else if(rotation<0)
     {
-      thruster.thruster5 = abs(rotation);
+      thruster.thruster5 = fabs(rotation);
     }
     
     led.led33_red = hovercraftControl->red_led;
