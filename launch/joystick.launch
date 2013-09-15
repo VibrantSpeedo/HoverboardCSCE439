@@ -1,13 +1,11 @@
 <!-- Hey, Emacs! This is an -*- xml -*- file!-->
 
 <launch>
-<group ns="joygroup">
 
 <node name="JoyStick" pkg="joystick" type="joystick"/>
+<node name="Controller" pkg="controller" type="controller"/>
 <node name="JoyNode" pkg="joy" type="joy_node">
 	<param name="dev" value="/dev/input/js1" />
 </node>
 
-
-</group>
 </launch>

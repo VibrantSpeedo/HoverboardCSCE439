@@ -1,6 +1,5 @@
 #include <ros/ros.h>
-#include <hovercraft/Thruster.h>
-#include <hovercraft/LED.h>
+#include <controller/HovercraftControl.h>
 #include <sensor_msgs/Joy.h>
 
 class JoyStick
@@ -13,8 +12,7 @@ private:
   
   ros::NodeHandle n;
 
-  ros::Publisher thruster_pub;
-  ros::Publisher led_pub;
+  ros::Publisher control_pub;
   ros::Subscriber joy_sub;
 
   bool hovercraftOn;
@@ -23,8 +21,7 @@ private:
 
 JoyStick::JoyStick(void)
 {
-  thruster_pub = n.advertise<hovercraft::Thruster>("hovercraft/Thruster", 1);
-  led_pub = n.advertise<hovercraft::LED>("hovercraft/LED", 1);
+  control_pub = n.advertise<controller::HovercraftControl>("controller/HovercraftControl", 1);
   joy_sub = n.subscribe<sensor_msgs::Joy>("joy", 10, &JoyStick::joyCallback, this);
   
   hovercraftOn = false;
@@ -40,36 +37,21 @@ void JoyStick::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
   }
   lastStartValue = joy->buttons[7];
 
-  hovercraft::Thruster thruster;
-  hovercraft::LED led;
+  controller::HovercraftControl hovercraftControl;
   if(hovercraftOn)
   {
-    thruster.lift = .2;
-    thruster.thruster1 = 0;
-    thruster.thruster2 = 0;
-    thruster.thruster3 = 0;
-    thruster.thruster4 = 0;
-    thruster.thruster5 = 0;
-    thruster.thruster6 = 0;
-    
-    led.led33_red = joy->buttons[1];
-    led.led33_green = joy->buttons[0];
+    hovercraftControl.power = 1;
+    hovercraftControl.x_translation = joy->axes[3];
+    hovercraftControl.y_translation = joy->axes[4];
+    hovercraftControl.rotation = joy->axes[0];
+    hovercraftControl.red_led = joy->buttons[1];
+    hovercraftControl.green_led = joy->buttons[0];
   }
   else
   {
-    thruster.lift = 0;
-    thruster.thruster1 = 0;
-    thruster.thruster2 = 0;
-    thruster.thruster3 = 0;
-    thruster.thruster4 = 0;
-    thruster.thruster5 = 0;
-    thruster.thruster6 = 0;
-
-    led.led33_red = 0;
-    led.led33_green = 0;
+    hovercraftControl.power = 0;
   }
-  thruster_pub.publish(thruster);
-  led_pub.publish(led);
+  control_pub.publish(hovercraftControl);
 }
 
 int main(int argc, char** argv)

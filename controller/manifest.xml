@@ -1,7 +1,7 @@
 <package>
-  <description brief="joystick">
+  <description brief="controller">
 
-     joystick
+     controller
 
   </description>
   <author>Elliott</author>
@@ -10,8 +10,7 @@
   <url>http://ros.org/wiki/joystick</url>
   <depend package="roslib"/>
   <depend package="roscpp"/>
-  <depend package="controller"/>
-  <depend package="sensor_msgs"/>
+  <depend package="hovercraft"/>
 
 </package>
 
