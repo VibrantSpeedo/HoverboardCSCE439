@@ -7,6 +7,8 @@
 
 
 #define DEADZONE .15
+#define MAX_RATE 619
+#define MIN_RATE -363
 
 long map(long x, long in_min, long in_max, long out_min, long out_max)
 {
@@ -28,6 +30,7 @@ private:
   ros::Publisher led_pub;
   ros::Subscriber joy_sub;
   ros::Subscriber gyro_sub;
+  float rate;
 };
 
 Controller::Controller(void)
@@ -36,10 +39,11 @@ Controller::Controller(void)
   led_pub = n.advertise<hovercraft::LED>("hovercraft/LED", 1);
   joy_sub = n.subscribe<controller::HovercraftControl>("controller/HovercraftControl", 1, &Controller::controllerCallback, this);
   gyro_sub = n.subscribe("hovercraft/Gyro",1,&Controller::gyroCallback,this);
+  rate = 0;
 }
 
 void Controller::gyroCallback(const hovercraft::Gyro::ConstPtr& gyroRaw){
-
+  rate = gyroRaw->rate;
 }
 
 void Controller::controllerCallback(const controller::HovercraftControl::ConstPtr& hovercraftControl)
