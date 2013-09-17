@@ -9,6 +9,8 @@
           X_TRANSLATION
           Y_TRANSLATION-VAL
           Y_TRANSLATION
+          LIFT-VAL
+          LIFT
           GREEN_LED-VAL
           GREEN_LED
           RED_LED-VAL

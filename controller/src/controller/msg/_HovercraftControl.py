@@ -7,7 +7,7 @@ import struct
 import std_msgs.msg
 
 class HovercraftControl(genpy.Message):
-  _md5sum = "3e703ba01a482dfbf906246fb0b9dfdf"
+  _md5sum = "e8e30f20acfa22ef681b754dca41eda2"
   _type = "controller/HovercraftControl"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
@@ -16,6 +16,7 @@ int8 power
 float32 rotation
 float32 x_translation
 float32 y_translation
+float32 lift
 int8 green_led
 int8 red_led
 
@@ -38,8 +39,8 @@ time stamp
 string frame_id
 
 """
-  __slots__ = ['header','power','rotation','x_translation','y_translation','green_led','red_led']
-  _slot_types = ['std_msgs/Header','int8','float32','float32','float32','int8','int8']
+  __slots__ = ['header','power','rotation','x_translation','y_translation','lift','green_led','red_led']
+  _slot_types = ['std_msgs/Header','int8','float32','float32','float32','float32','int8','int8']
 
   def __init__(self, *args, **kwds):
     """
@@ -49,7 +50,7 @@ string frame_id
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,power,rotation,x_translation,y_translation,green_led,red_led
+       header,power,rotation,x_translation,y_translation,lift,green_led,red_led
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -68,6 +69,8 @@ string frame_id
         self.x_translation = 0.
       if self.y_translation is None:
         self.y_translation = 0.
+      if self.lift is None:
+        self.lift = 0.
       if self.green_led is None:
         self.green_led = 0
       if self.red_led is None:
@@ -78,6 +81,7 @@ string frame_id
       self.rotation = 0.
       self.x_translation = 0.
       self.y_translation = 0.
+      self.lift = 0.
       self.green_led = 0
       self.red_led = 0
 
@@ -102,7 +106,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_b3f2b.pack(_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.green_led, _x.red_led))
+      buff.write(_struct_b4f2b.pack(_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.lift, _x.green_led, _x.red_led))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -130,8 +134,8 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 15
-      (_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.green_led, _x.red_led,) = _struct_b3f2b.unpack(str[start:end])
+      end += 19
+      (_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.lift, _x.green_led, _x.red_led,) = _struct_b4f2b.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -153,7 +157,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_b3f2b.pack(_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.green_led, _x.red_led))
+      buff.write(_struct_b4f2b.pack(_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.lift, _x.green_led, _x.red_led))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -182,12 +186,12 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 15
-      (_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.green_led, _x.red_led,) = _struct_b3f2b.unpack(str[start:end])
+      end += 19
+      (_x.power, _x.rotation, _x.x_translation, _x.y_translation, _x.lift, _x.green_led, _x.red_led,) = _struct_b4f2b.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
+_struct_b4f2b = struct.Struct("<b4f2b")
 _struct_3I = struct.Struct("<3I")
-_struct_b3f2b = struct.Struct("<b3f2b")

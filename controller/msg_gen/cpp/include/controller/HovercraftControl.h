@@ -28,6 +28,7 @@ struct HovercraftControl_ {
   , rotation(0.0)
   , x_translation(0.0)
   , y_translation(0.0)
+  , lift(0.0)
   , green_led(0)
   , red_led(0)
   {
@@ -39,6 +40,7 @@ struct HovercraftControl_ {
   , rotation(0.0)
   , x_translation(0.0)
   , y_translation(0.0)
+  , lift(0.0)
   , green_led(0)
   , red_led(0)
   {
@@ -58,6 +60,9 @@ struct HovercraftControl_ {
 
   typedef float _y_translation_type;
   float y_translation;
+
+  typedef float _lift_type;
+  float lift;
 
   typedef int8_t _green_led_type;
   int8_t green_led;
@@ -94,12 +99,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::controller::HovercraftControl_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "3e703ba01a482dfbf906246fb0b9dfdf";
+    return "e8e30f20acfa22ef681b754dca41eda2";
   }
 
   static const char* value(const  ::controller::HovercraftControl_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0x3e703ba01a482dfbULL;
-  static const uint64_t static_value2 = 0xf906246fb0b9dfdfULL;
+  static const uint64_t static_value1 = 0xe8e30f20acfa22efULL;
+  static const uint64_t static_value2 = 0x681b754dca41eda2ULL;
 };
 
 template<class ContainerAllocator>
@@ -122,6 +127,7 @@ int8 power\n\
 float32 rotation\n\
 float32 x_translation\n\
 float32 y_translation\n\
+float32 lift\n\
 int8 green_led\n\
 int8 red_led\n\
 \n\
@@ -168,6 +174,7 @@ template<class ContainerAllocator> struct Serializer< ::controller::HovercraftCo
     stream.next(m.rotation);
     stream.next(m.x_translation);
     stream.next(m.y_translation);
+    stream.next(m.lift);
     stream.next(m.green_led);
     stream.next(m.red_led);
   }
@@ -198,6 +205,8 @@ s << std::endl;
     Printer<float>::stream(s, indent + "  ", v.x_translation);
     s << indent << "y_translation: ";
     Printer<float>::stream(s, indent + "  ", v.y_translation);
+    s << indent << "lift: ";
+    Printer<float>::stream(s, indent + "  ", v.lift);
     s << indent << "green_led: ";
     Printer<int8_t>::stream(s, indent + "  ", v.green_led);
     s << indent << "red_led: ";

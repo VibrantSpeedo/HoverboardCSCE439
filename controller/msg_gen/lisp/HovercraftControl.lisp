@@ -32,6 +32,11 @@
     :initarg :y_translation
     :type cl:float
     :initform 0.0)
+   (lift
+    :reader lift
+    :initarg :lift
+    :type cl:float
+    :initform 0.0)
    (green_led
     :reader green_led
     :initarg :green_led
@@ -77,6 +82,11 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader controller-msg:y_translation-val is deprecated.  Use controller-msg:y_translation instead.")
   (y_translation m))
 
+(cl:ensure-generic-function 'lift-val :lambda-list '(m))
+(cl:defmethod lift-val ((m <HovercraftControl>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader controller-msg:lift-val is deprecated.  Use controller-msg:lift instead.")
+  (lift m))
+
 (cl:ensure-generic-function 'green_led-val :lambda-list '(m))
 (cl:defmethod green_led-val ((m <HovercraftControl>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader controller-msg:green_led-val is deprecated.  Use controller-msg:green_led instead.")
@@ -103,6 +113,11 @@
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
   (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'y_translation))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
+  (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'lift))))
     (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
@@ -138,6 +153,12 @@
       (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'y_translation) (roslisp-utils:decode-single-float-bits bits)))
+    (cl:let ((bits 0))
+      (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
+    (cl:setf (cl:slot-value msg 'lift) (roslisp-utils:decode-single-float-bits bits)))
     (cl:let ((unsigned 0))
       (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
       (cl:setf (cl:slot-value msg 'green_led) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
@@ -154,20 +175,21 @@
   "controller/HovercraftControl")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<HovercraftControl>)))
   "Returns md5sum for a message object of type '<HovercraftControl>"
-  "3e703ba01a482dfbf906246fb0b9dfdf")
+  "e8e30f20acfa22ef681b754dca41eda2")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'HovercraftControl)))
   "Returns md5sum for a message object of type 'HovercraftControl"
-  "3e703ba01a482dfbf906246fb0b9dfdf")
+  "e8e30f20acfa22ef681b754dca41eda2")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<HovercraftControl>)))
   "Returns full string definition for message of type '<HovercraftControl>"
-  (cl:format cl:nil "Header header~%~%int8 power~%float32 rotation~%float32 x_translation~%float32 y_translation~%int8 green_led~%int8 red_led~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
+  (cl:format cl:nil "Header header~%~%int8 power~%float32 rotation~%float32 x_translation~%float32 y_translation~%float32 lift~%int8 green_led~%int8 red_led~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'HovercraftControl)))
   "Returns full string definition for message of type 'HovercraftControl"
-  (cl:format cl:nil "Header header~%~%int8 power~%float32 rotation~%float32 x_translation~%float32 y_translation~%int8 green_led~%int8 red_led~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
+  (cl:format cl:nil "Header header~%~%int8 power~%float32 rotation~%float32 x_translation~%float32 y_translation~%float32 lift~%int8 green_led~%int8 red_led~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <HovercraftControl>))
   (cl:+ 0
      (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'header))
      1
+     4
      4
      4
      4
@@ -182,6 +204,7 @@
     (cl:cons ':rotation (rotation msg))
     (cl:cons ':x_translation (x_translation msg))
     (cl:cons ':y_translation (y_translation msg))
+    (cl:cons ':lift (lift msg))
     (cl:cons ':green_led (green_led msg))
     (cl:cons ':red_led (red_led msg))
 ))

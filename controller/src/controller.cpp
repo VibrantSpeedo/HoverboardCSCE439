@@ -28,9 +28,6 @@ private:
   ros::Publisher led_pub;
   ros::Subscriber joy_sub;
   ros::Subscriber gyro_sub;
-
-  bool hovercraftOn;
-  uint8_t lastStartValue;
 };
 
 Controller::Controller(void)
@@ -39,9 +36,6 @@ Controller::Controller(void)
   led_pub = n.advertise<hovercraft::LED>("hovercraft/LED", 1);
   joy_sub = n.subscribe<controller::HovercraftControl>("controller/HovercraftControl", 1, &Controller::controllerCallback, this);
   gyro_sub = n.subscribe("hovercraft/Gyro",1,&Controller::gyroCallback,this);
-  
-  hovercraftOn = false;
-  lastStartValue = 0;
 }
 
 void Controller::gyroCallback(const hovercraft::Gyro::ConstPtr& gyroRaw){
@@ -72,7 +66,7 @@ void Controller::controllerCallback(const controller::HovercraftControl::ConstPt
     float y = (fabs((float)hovercraftControl->y_translation) > DEADZONE) ? hovercraftControl->y_translation : 0;
     float rotation = (fabs((float)hovercraftControl->rotation) > DEADZONE) ? hovercraftControl->rotation : 0;
     
-    thruster.lift = .8;
+    thruster.lift = hovercraftControl->lift;
     if(x>0)
     {
        thruster.thruster1 = x*0.5;
