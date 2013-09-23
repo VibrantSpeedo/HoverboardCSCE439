@@ -8,3 +8,4 @@ float64 thruster3
 float64 thruster4
 float64 thruster5
 float64 thruster6
+float64 angle
