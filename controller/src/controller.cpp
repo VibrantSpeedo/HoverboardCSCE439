@@ -14,6 +14,11 @@ class Controller
 {
 public:
   Controller();
+  ros::Publisher thruster_pub;
+  hovercraft::Thruster thruster;
+  float rate;
+  bool turningLeft;
+  bool turningRight;
   
 private:
   void controllerCallback(const controller::HovercraftControl::ConstPtr& hovercraftControl);
@@ -21,11 +26,9 @@ private:
 
   ros::NodeHandle n;
 
-  ros::Publisher thruster_pub;
   ros::Publisher led_pub;
   ros::Subscriber joy_sub;
   ros::Subscriber gyro_sub;
-  float rate;
 };
 
 Controller::Controller(void)
@@ -35,6 +38,8 @@ Controller::Controller(void)
   joy_sub = n.subscribe<controller::HovercraftControl>("controller/HovercraftControl", 1, &Controller::controllerCallback, this);
   gyro_sub = n.subscribe("hovercraft/Gyro",1,&Controller::gyroCallback,this);
   rate = 0;
+  turningRight = false;
+  turningLeft = false;
 }
 
 void Controller::gyroCallback(const hovercraft::Gyro::ConstPtr& gyroRaw){
@@ -43,7 +48,7 @@ void Controller::gyroCallback(const hovercraft::Gyro::ConstPtr& gyroRaw){
 
 void Controller::controllerCallback(const controller::HovercraftControl::ConstPtr& hovercraftControl)
 {
-  hovercraft::Thruster thruster;
+  //hovercraft::Thruster thruster;
   hovercraft::LED led;
 
   thruster.lift = 0;
@@ -120,11 +125,18 @@ void Controller::controllerCallback(const controller::HovercraftControl::ConstPt
     {
       thruster.thruster4 = rotation;
       thruster.thruster5 = 0;
+      turningLeft = true;
     } 
     else if(rotation<0)
     {
       thruster.thruster4 = 0;
       thruster.thruster5 = fabs(rotation);
+      turningRight = true;
+    }
+    else 
+    {
+      turningRight = false;
+      turningLeft = false;
     }
     
     led.led33_red = hovercraftControl->red_led;
@@ -139,6 +151,45 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "controller");
   Controller controller;
+
+  ros::Rate r(10);
   
-  ros::spin();
+  while(ros::ok())
+  {	
+    if(controller.turningLeft){	
+      if(controller.rate > (MAX_RATE-50))
+      {
+        controller.thruster.thruster5 =.1;
+        //controller.thruster.thruster4 -= .02;
+      } 
+      else if(controller.thruster.thruster5 > 0)
+      {
+        controller.thruster.thruster5 = 0;
+      }
+      controller.thruster_pub.publish(controller.thruster);
+    }
+    else if(controller.turningRight)
+    {   
+      if(controller.rate < (MIN_RATE+50))
+      {
+        controller.thruster.thruster4 = .75;
+        //controller.thruster.thruster5 -= .02;
+      }
+      else if(controller.thruster.thruster4 > 0)
+      {
+        controller.thruster.thruster4 = 0;
+      }
+      controller.thruster_pub.publish(controller.thruster);
+    }
+    else if(!controller.turningLeft && !controller.turningRight && (controller.thruster.thruster4 > 0 || controller.thruster.thruster5 > 0))
+    {
+      controller.thruster.thruster4 = 0;
+      controller.thruster.thruster5 = 0;
+      controller.thruster_pub.publish(controller.thruster);
+    }
+    ros::spinOnce();
+    r.sleep();
+  }
+  
+  //ros::spin();
 }
