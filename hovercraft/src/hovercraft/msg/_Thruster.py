@@ -7,7 +7,7 @@ import struct
 import std_msgs.msg
 
 class Thruster(genpy.Message):
-  _md5sum = "77ae7c2ac5b2374a7cf656a5602268c6"
+  _md5sum = "066c37b338dd151590d1ac6a0c6d1f19"
   _type = "hovercraft/Thruster"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
@@ -20,6 +20,7 @@ float64 thruster3
 float64 thruster4
 float64 thruster5
 float64 thruster6
+float64 angle
 
 ================================================================================
 MSG: std_msgs/Header
@@ -40,8 +41,8 @@ time stamp
 string frame_id
 
 """
-  __slots__ = ['header','lift','thruster1','thruster2','thruster3','thruster4','thruster5','thruster6']
-  _slot_types = ['std_msgs/Header','float64','float64','float64','float64','float64','float64','float64']
+  __slots__ = ['header','lift','thruster1','thruster2','thruster3','thruster4','thruster5','thruster6','angle']
+  _slot_types = ['std_msgs/Header','float64','float64','float64','float64','float64','float64','float64','float64']
 
   def __init__(self, *args, **kwds):
     """
@@ -51,7 +52,7 @@ string frame_id
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,lift,thruster1,thruster2,thruster3,thruster4,thruster5,thruster6
+       header,lift,thruster1,thruster2,thruster3,thruster4,thruster5,thruster6,angle
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -76,6 +77,8 @@ string frame_id
         self.thruster5 = 0.
       if self.thruster6 is None:
         self.thruster6 = 0.
+      if self.angle is None:
+        self.angle = 0.
     else:
       self.header = std_msgs.msg.Header()
       self.lift = 0.
@@ -85,6 +88,7 @@ string frame_id
       self.thruster4 = 0.
       self.thruster5 = 0.
       self.thruster6 = 0.
+      self.angle = 0.
 
   def _get_types(self):
     """
@@ -107,7 +111,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_7d.pack(_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6))
+      buff.write(_struct_8d.pack(_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6, _x.angle))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -135,8 +139,8 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 56
-      (_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6,) = _struct_7d.unpack(str[start:end])
+      end += 64
+      (_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6, _x.angle,) = _struct_8d.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -158,7 +162,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_7d.pack(_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6))
+      buff.write(_struct_8d.pack(_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6, _x.angle))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -187,12 +191,12 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 56
-      (_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6,) = _struct_7d.unpack(str[start:end])
+      end += 64
+      (_x.lift, _x.thruster1, _x.thruster2, _x.thruster3, _x.thruster4, _x.thruster5, _x.thruster6, _x.angle,) = _struct_8d.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
 _struct_3I = struct.Struct("<3I")
-_struct_7d = struct.Struct("<7d")
+_struct_8d = struct.Struct("<8d")
