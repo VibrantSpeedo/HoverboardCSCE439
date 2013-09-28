@@ -11,6 +11,12 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 rosbuild_add_executable(controller src/controller.cpp)
+rosbuild_add_executable(joystick src/joystick.cpp)
+rosbuild_add_executable(arbitrator src/arbitrator.cpp)
+rosbuild_add_executable(angularPositionPID src/angularPositionPID.cpp)
+rosbuild_add_executable(triangle src/triangle.cpp)
+rosbuild_add_executable(joyAngleIntegrator src/joyAngleIntegrator.cpp)
+rosbuild_add_executable(reactiveControl src/reactiveControl.cpp)
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory

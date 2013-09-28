@@ -2,7 +2,7 @@
 
 <launch>
 
-<node name="JoyStick" pkg="joystick" type="joystick"/>
+<node name="JoyStick" pkg="controller" type="joystick"/>
 <node name="Controller" pkg="controller" type="controller"/>
 <node name="JoyNode" pkg="joy" type="joy_node">
 	<param name="dev" value="/dev/input/js1" />
