@@ -2,7 +2,7 @@
 #include <controller/JoyStick.h>
 #include <sensor_msgs/Joy.h>
 
-#define ButtonCount 8
+#define ButtonCount 15
 #define ButtonA 0
 #define ButtonB 1
 #define ButtonX 2
@@ -11,12 +11,14 @@
 #define RB 5
 #define Back 6
 #define Start 7
+#define DPadLeft 11
+#define DPadRight 12
+#define DPadUp 13
+#define DPadDown 14
 
 #define LeftJoystickX 0
 #define RightJoystickX 3
 #define RightJoystickY 4
-#define DPadX 6
-#define DPadY 7
 
 class JoyStick
 {
@@ -35,8 +37,6 @@ private:
   bool hovercraftOn;
   bool joystickControl;
   uint8_t lastButtonValues[ButtonCount];
-  int lastDPadXValue;
-  int lastDPadYValue;
 };
 
 JoyStick::JoyStick(void)
@@ -51,8 +51,6 @@ JoyStick::JoyStick(void)
   {
     lastButtonValues[i] = 0;
   }
-  lastDPadXValue;
-  lastDPadYValue;
 }
 
 void JoyStick::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
@@ -106,19 +104,19 @@ void JoyStick::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
       msg.add90 = true;
     }
     
-    if((int)joy->axes[DPadX] == 1 && lastDPadXValue == 0)
-    {
-      msg.angle = 180;
-    }
-    else if((int)joy->axes[DPadX] == -1 && lastDPadXValue == 0)
+    if(joy->buttons[DPadRight] == 1 && lastButtonValues[DPadRight] == 0)
     {
       msg.angle = 0;
     }
-    else if((int)joy->axes[DPadY] == 1 && lastDPadYValue == 0)
+    else if(joy->buttons[DPadUp] == 1 && lastButtonValues[DPadUp] == 0)
     {
       msg.angle = 90;
     }
-    else if((int)joy->axes[DPadY] == -1 && lastDPadYValue == 0)
+    else if(joy->buttons[DPadLeft] == 1 && lastButtonValues[DPadLeft] == 0)
+    {
+      msg.angle = 180;
+    }
+    else if(joy->buttons[DPadDown] == 1 && lastButtonValues[DPadDown] == 0)
     {
       msg.angle = 270;
     }
@@ -135,8 +133,6 @@ void JoyStick::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
   {
     lastButtonValues[i] = joy->buttons[i];
   }
-  lastDPadXValue = (int)joy->axes[DPadX];
-  lastDPadYValue = (int)joy->axes[DPadY];
 
   joy_pub.publish(msg);
 }
