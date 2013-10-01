@@ -10,7 +10,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
 rosbuild_init()
-rosbuild_add_executable(controller src/controller.cpp)
+rosbuild_add_executable(thrusterMapping src/thrusterMapping.cpp)
 rosbuild_add_executable(joystick src/joystick.cpp)
 rosbuild_add_executable(arbitrator src/arbitrator.cpp)
 rosbuild_add_executable(angularPositionPID src/angularPositionPID.cpp)

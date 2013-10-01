@@ -1,7 +1,17 @@
 (cl:defpackage controller-msg
   (:use )
   (:export
+   "<ANGULARPOSITIONPID>"
+   "ANGULARPOSITIONPID"
+   "<ARBITRATOR>"
+   "ARBITRATOR"
    "<HOVERCRAFTCONTROL>"
    "HOVERCRAFTCONTROL"
+   "<JOYANGLEINTEGRATOR>"
+   "JOYANGLEINTEGRATOR"
+   "<JOYSTICK>"
+   "JOYSTICK"
+   "<TRIANGLE>"
+   "TRIANGLE"
   ))
 

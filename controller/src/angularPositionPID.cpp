@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include <hoverboard/GyroRaw.h>
 #include <hovercraft/Gyro.h>
-#include <controller/HovercraftControl.h>
-#include <hovercraft/Thruster.h>
+#include <controller/Arbitrator.h>
+#include <controller/AngularPositionPID.h>
 #include <cmath>
 
 class AngularPositionPID
@@ -11,20 +11,17 @@ public:
   AngularPositionPID();
   float rate;
   float angle;
-  double targetAngle;
   double pValue;
   double dValue;
-  bool isHovercraftOn;
-  float lift;
   double lastError;
 
 private:
   void gyroRawCallback(const hoverboard::GyroRaw::ConstPtr& data);
   void gyroCallback(const hovercraft::Gyro::ConstPtr& data);
-  void controllerCallback(const controller::HovercraftControl::ConstPtr& hovercraftControl);
+  void joystickCallback(const controller::Arbitrator::ConstPtr& arbitrator);
   
   ros::NodeHandle n;
-  ros::Publisher thruster_pub;
+  ros::Publisher pid_pub;
   ros::Subscriber joy_sub;
   ros::Subscriber gyro_raw_sub;
   ros::Subscriber gyro_sub;
@@ -32,56 +29,69 @@ private:
 
 AngularPositionPID::AngularPositionPID(void)
 {
-  gyro_raw_sub = n.subscribe("hoverboard/GyroRaw",1,&AngularPositionPID::gyroRawCallback,this);
-  //gyro_sub = n.subscribe("hovercraft/Gyro",1,&AngularPositionPID::gyroCallback,this);
-  joy_sub = n.subscribe<controller::HovercraftControl>("controller/HovercraftControl", 1, &AngularPositionPID::controllerCallback, this);
-  thruster_pub = n.advertise<hovercraft::Thruster>("hovercraft/Thruster", 1);
-  targetAngle = 0;
+  gyro_raw_sub = n.subscribe("hoverboard/GyroRaw",10,&AngularPositionPID::gyroRawCallback,this);
+  //gyro_sub = n.subscribe("hovercraft/Gyro",10,&AngularPositionPID::gyroCallback,this);
+  joy_sub = n.subscribe<controller::Arbitrator>("controller/Arbitrator", 10, &AngularPositionPID::joystickCallback, this);
+  pid_pub = n.advertise<controller::AngularPositionPID>("controller/AngularPositionPID", 10);
+  
   pValue = .5;
   n.param("AngularPositionPID/p_value",pValue,pValue);
   n.setParam("AngularPositonPID/p_value",pValue);
   dValue = .5;
   n.param("AngularPositionPID/d_value",dValue,dValue);
   n.setParam("AngularPositonPID/d_value",dValue);
-  targetAngle = 0;
-  n.param("AngularPositionPID/target_angle",targetAngle,targetAngle);
-  n.setParam("AngularPositionPID/target_angle",targetAngle);
-  isHovercraftOn = false;
+  
+  rate = 0;
+  angle = 0;
   lastError = 0;
 }
 
 void AngularPositionPID::gyroRawCallback(const hoverboard::GyroRaw::ConstPtr& gyro){
-  float r, forwardsAngle, backwardsAngle, error;
   rate = gyro->rate;
-  angle = gyro->angle;
-  hovercraft::Thruster thruster;
-  if(isHovercraftOn)
-  {
-    thruster.lift = lift;
+  angle = gyro->angle;  
+}
 
-    if(angle > targetAngle){
+void AngularPositionPID::gyroCallback(const hovercraft::Gyro::ConstPtr& gyro){
+  rate = gyro->rate;
+  angle = gyro->angle;  
+}
+
+void AngularPositionPID::joystickCallback(const controller::Arbitrator::ConstPtr& arbitrator)
+{
+  float r, forwardsAngle, backwardsAngle, error, p, d;
+  float targetAngle = arbitrator->angle;
+  
+  controller::AngularPositionPID msg;
+  msg.power = arbitrator->power;
+  msg.x_translation = arbitrator->x_translation;
+  msg.y_translation = arbitrator->y_translation;
+  msg.lift = arbitrator->lift;
+
+  if(arbitrator->power)
+  {
+  if(angle > targetAngle){
       backwardsAngle = angle - targetAngle;
       forwardsAngle = fabs(angle - (targetAngle + 360));
 
       if(backwardsAngle < forwardsAngle){
         error = targetAngle - angle;
-        float p = pValue*(targetAngle - angle);
-        float d = dValue*(error - lastError);
+        p = pValue*(targetAngle - angle);
+        d = dValue*(error - lastError);
         lastError = error;
         r = fabs((p + d) / 360);
         if (r > 1)
           r=1;  
-      thruster.thruster5 = r;
+      msg.thruster5 = r;
       }
       else if(forwardsAngle <= backwardsAngle){
         error = (targetAngle+360) - angle;
-        float p = pValue*(error);
-        float d = dValue*(error - lastError);
+        p = pValue*(error);
+        d = dValue*(error - lastError);
         lastError = error;
         r = fabs((p + d) / 360);
         if (r > 1)
           r=1;  
-        thruster.thruster4 = r;
+        msg.thruster4 = r;
       }
     }
     else if(targetAngle >= angle){
@@ -90,70 +100,34 @@ void AngularPositionPID::gyroRawCallback(const hoverboard::GyroRaw::ConstPtr& gy
       
       if(forwardsAngle <= backwardsAngle){
         error = targetAngle - angle;
-        float p = pValue*(targetAngle - angle);
-        float d = dValue*(error - lastError);
+        p = pValue*(targetAngle - angle);
+        d = dValue*(error - lastError);
         lastError = error;
         r = fabs((p + d) / 360);
         if (r > 1)
           r=1;  
         
-        thruster.thruster4 = r;
+        msg.thruster4 = r;
       }
       else if(backwardsAngle < forwardsAngle){
         error = targetAngle - (angle+360);
-        float p = pValue*(error);
-        float d = dValue*(error - lastError);
+        p = pValue*(error);
+        d = dValue*(error - lastError);
         lastError = error;
         r = fabs((p + d) / 360);
         if (r > 1)
           r=1;  
 
-        thruster.thruster5 = r;
+        msg.thruster5 = r;
       }
     }
   }
   else 
   {
-    thruster.thruster4 = 0; //Right
-    thruster.thruster5 = 0; //Left
+    msg.thruster4 = 0; //Right
+    msg.thruster5 = 0; //Left
   }
-  thruster_pub.publish(thruster);
-}
-
-void AngularPositionPID::gyroCallback(const hovercraft::Gyro::ConstPtr& gyro){
-  float r;
-  rate = gyro->rate;
-  angle = gyro->angle;
-  hovercraft::Thruster thruster;
-  if(isHovercraftOn)
-  {
-    thruster.lift = lift;
-
-    r = pValue*( (targetAngle + (float)(360*((int)(angle/360)))) - angle) / 360;
-    if(r > 0)
-    {
-      if(r > 1) r = 1;
-      thruster.thruster4 = r;
-    }
-    else
-    {
-      r = fabs(r);
-      if(r > 1) r = 1;
-      thruster.thruster5 = r;
-    } 
-  }
-  else 
-  {
-    thruster.thruster4 = 0; //Right
-    thruster.thruster5 = 0; //Left
-  }
-  thruster_pub.publish(thruster);
-}
-
-void AngularPositionPID::controllerCallback(const controller::HovercraftControl::ConstPtr& hovercraftControl)
-{
-  isHovercraftOn = hovercraftControl->power;
-  lift = hovercraftControl->lift;
+  pid_pub.publish(msg);
 }
 
 int main(int argc, char** argv)

@@ -15,6 +15,4 @@
           THRUSTER5
           THRUSTER6-VAL
           THRUSTER6
-          ANGLE-VAL
-          ANGLE
 ))

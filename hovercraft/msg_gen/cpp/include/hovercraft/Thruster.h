@@ -31,7 +31,6 @@ struct Thruster_ {
   , thruster4(0.0)
   , thruster5(0.0)
   , thruster6(0.0)
-  , angle(0.0)
   {
   }
 
@@ -44,7 +43,6 @@ struct Thruster_ {
   , thruster4(0.0)
   , thruster5(0.0)
   , thruster6(0.0)
-  , angle(0.0)
   {
   }
 
@@ -71,9 +69,6 @@ struct Thruster_ {
 
   typedef double _thruster6_type;
   double thruster6;
-
-  typedef double _angle_type;
-  double angle;
 
 
   typedef boost::shared_ptr< ::hovercraft::Thruster_<ContainerAllocator> > Ptr;
@@ -104,12 +99,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::hovercraft::Thruster_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "066c37b338dd151590d1ac6a0c6d1f19";
+    return "77ae7c2ac5b2374a7cf656a5602268c6";
   }
 
   static const char* value(const  ::hovercraft::Thruster_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0x066c37b338dd1515ULL;
-  static const uint64_t static_value2 = 0x90d1ac6a0c6d1f19ULL;
+  static const uint64_t static_value1 = 0x77ae7c2ac5b2374aULL;
+  static const uint64_t static_value2 = 0x7cf656a5602268c6ULL;
 };
 
 template<class ContainerAllocator>
@@ -136,7 +131,6 @@ float64 thruster3\n\
 float64 thruster4\n\
 float64 thruster5\n\
 float64 thruster6\n\
-float64 angle\n\
 \n\
 ================================================================================\n\
 MSG: std_msgs/Header\n\
@@ -184,7 +178,6 @@ template<class ContainerAllocator> struct Serializer< ::hovercraft::Thruster_<Co
     stream.next(m.thruster4);
     stream.next(m.thruster5);
     stream.next(m.thruster6);
-    stream.next(m.angle);
   }
 
   ROS_DECLARE_ALLINONE_SERIALIZER;
@@ -219,8 +212,6 @@ s << std::endl;
     Printer<double>::stream(s, indent + "  ", v.thruster5);
     s << indent << "thruster6: ";
     Printer<double>::stream(s, indent + "  ", v.thruster6);
-    s << indent << "angle: ";
-    Printer<double>::stream(s, indent + "  ", v.angle);
   }
 };
 

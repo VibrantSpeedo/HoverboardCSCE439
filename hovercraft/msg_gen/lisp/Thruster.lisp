@@ -46,11 +46,6 @@
     :reader thruster6
     :initarg :thruster6
     :type cl:float
-    :initform 0.0)
-   (angle
-    :reader angle
-    :initarg :angle
-    :type cl:float
     :initform 0.0))
 )
 
@@ -101,11 +96,6 @@
 (cl:defmethod thruster6-val ((m <Thruster>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader hovercraft-msg:thruster6-val is deprecated.  Use hovercraft-msg:thruster6 instead.")
   (thruster6 m))
-
-(cl:ensure-generic-function 'angle-val :lambda-list '(m))
-(cl:defmethod angle-val ((m <Thruster>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader hovercraft-msg:angle-val is deprecated.  Use hovercraft-msg:angle instead.")
-  (angle m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <Thruster>) ostream)
   "Serializes a message object of type '<Thruster>"
   (roslisp-msg-protocol:serialize (cl:slot-value msg 'header) ostream)
@@ -164,15 +154,6 @@
     (cl:write-byte (cl:ldb (cl:byte 8 48) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 56) bits) ostream))
   (cl:let ((bits (roslisp-utils:encode-double-float-bits (cl:slot-value msg 'thruster6))))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 32) bits) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 40) bits) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 48) bits) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 56) bits) ostream))
-  (cl:let ((bits (roslisp-utils:encode-double-float-bits (cl:slot-value msg 'angle))))
     (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
@@ -255,16 +236,6 @@
       (cl:setf (cl:ldb (cl:byte 8 48) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 56) bits) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'thruster6) (roslisp-utils:decode-double-float-bits bits)))
-    (cl:let ((bits 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 32) bits) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 40) bits) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 48) bits) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 56) bits) (cl:read-byte istream))
-    (cl:setf (cl:slot-value msg 'angle) (roslisp-utils:decode-double-float-bits bits)))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<Thruster>)))
@@ -275,20 +246,19 @@
   "hovercraft/Thruster")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<Thruster>)))
   "Returns md5sum for a message object of type '<Thruster>"
-  "066c37b338dd151590d1ac6a0c6d1f19")
+  "77ae7c2ac5b2374a7cf656a5602268c6")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'Thruster)))
   "Returns md5sum for a message object of type 'Thruster"
-  "066c37b338dd151590d1ac6a0c6d1f19")
+  "77ae7c2ac5b2374a7cf656a5602268c6")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<Thruster>)))
   "Returns full string definition for message of type '<Thruster>"
-  (cl:format cl:nil "Header header~%~%#Setpoints for the thrusters 0.0 off, 1.0 max~%float64 lift~%float64 thruster1~%float64 thruster2~%float64 thruster3~%float64 thruster4~%float64 thruster5~%float64 thruster6~%float64 angle~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
+  (cl:format cl:nil "Header header~%~%#Setpoints for the thrusters 0.0 off, 1.0 max~%float64 lift~%float64 thruster1~%float64 thruster2~%float64 thruster3~%float64 thruster4~%float64 thruster5~%float64 thruster6~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'Thruster)))
   "Returns full string definition for message of type 'Thruster"
-  (cl:format cl:nil "Header header~%~%#Setpoints for the thrusters 0.0 off, 1.0 max~%float64 lift~%float64 thruster1~%float64 thruster2~%float64 thruster3~%float64 thruster4~%float64 thruster5~%float64 thruster6~%float64 angle~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
+  (cl:format cl:nil "Header header~%~%#Setpoints for the thrusters 0.0 off, 1.0 max~%float64 lift~%float64 thruster1~%float64 thruster2~%float64 thruster3~%float64 thruster4~%float64 thruster5~%float64 thruster6~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <Thruster>))
   (cl:+ 0
      (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'header))
-     8
      8
      8
      8
@@ -308,5 +278,4 @@
     (cl:cons ':thruster4 (thruster4 msg))
     (cl:cons ':thruster5 (thruster5 msg))
     (cl:cons ':thruster6 (thruster6 msg))
-    (cl:cons ':angle (angle msg))
 ))

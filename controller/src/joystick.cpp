@@ -1,6 +1,22 @@
 #include <ros/ros.h>
-#include <controller/HovercraftControl.h>
+#include <controller/JoyStick.h>
 #include <sensor_msgs/Joy.h>
+
+#define ButtonCount 8
+#define ButtonA 0
+#define ButtonB 1
+#define ButtonX 2
+#define ButtonY 3
+#define LB 4
+#define RB 5
+#define Back 6
+#define Start 7
+
+#define LeftJoystickX 0
+#define RightJoystickX 3
+#define RightJoystickY 4
+#define DPadX 6
+#define DPadY 7
 
 class JoyStick
 {
@@ -12,43 +28,63 @@ private:
   
   ros::NodeHandle n;
 
-  ros::Publisher control_pub;
+  ros::Publisher  joy_pub;
   ros::Subscriber joy_sub;
 
   float lift;
   bool hovercraftOn;
-  uint8_t lastStartValue;
-  uint8_t lastLBValue;
-  uint8_t lastRBValue; 
+  bool joystickControl;
+  uint8_t lastButtonValues[ButtonCount];
+  int lastDPadXValue;
+  int lastDPadYValue;
 };
 
 JoyStick::JoyStick(void)
 {
-  control_pub = n.advertise<controller::HovercraftControl>("controller/HovercraftControl", 1);
+  joy_pub = n.advertise<controller::JoyStick>("controller/JoyStick", 10);
   joy_sub = n.subscribe<sensor_msgs::Joy>("joy", 10, &JoyStick::joyCallback, this);
   
   lift = 0.4;
   hovercraftOn = false;
-  lastStartValue = 0;
+  joystickControl = true;
+  for(int i = 0; i < ButtonCount; i++)
+  {
+    lastButtonValues[i] = 0;
+  }
+  lastDPadXValue;
+  lastDPadYValue;
 }
 
 void JoyStick::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   //If Start button is pressed, toggle state of hovercraft
-  if(joy->buttons[7] == 1 && lastStartValue == 0)
+  if(joy->buttons[Start] == 1 && lastButtonValues[Start] == 0)
   {
     hovercraftOn = !hovercraftOn;
   }
-  lastStartValue = joy->buttons[7];
+  if(joy->buttons[Back] == 1 && lastButtonValues[Back] == 0)
+  {
+    joystickControl = !joystickControl;
+  }
+  if(!hovercraftOn) joystickControl = true;
+  controller::JoyStick msg;
+  msg.power = hovercraftOn;
+  msg.rotation = 0;
+  msg.x_translation = 0;
+  msg.y_translation = 0;
+  msg.lift = 0;
+  msg.angle = -1;
+  msg.add90 = 0;
+  msg.subtract90 = 0;
+  msg.joystickControl = joystickControl;
 
-  controller::HovercraftControl hovercraftControl;
   if(hovercraftOn)
   {
-    if(joy->buttons[4] == 1 && lastLBValue == 0)
+    if(joy->buttons[ButtonX] == 1 && lastButtonValues[ButtonX] == 0)
     {
       lift -= 0.1;
     }
-    if(joy->buttons[5] == 1 && lastRBValue == 0)
+    if(joy->buttons[ButtonY] == 1 && lastButtonValues[ButtonY] == 0)
     {
       lift += 0.1;
     }
@@ -60,22 +96,49 @@ void JoyStick::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     {
        lift = 0;
     }
-    lastLBValue = joy->buttons[4];
-    lastRBValue = joy->buttons[5];
+    
+    if(joy->buttons[LB] == 1 && lastButtonValues[LB] == 0)
+    {
+      msg.subtract90 = true;
+    }
+    else if(joy->buttons[RB] == 1 && lastButtonValues[RB] == 0)
+    {
+      msg.add90 = true;
+    }
+    
+    if((int)joy->axes[DPadX] == 1 && lastDPadXValue == 0)
+    {
+      msg.angle = 180;
+    }
+    else if((int)joy->axes[DPadX] == -1 && lastDPadXValue == 0)
+    {
+      msg.angle = 0;
+    }
+    else if((int)joy->axes[DPadY] == 1 && lastDPadYValue == 0)
+    {
+      msg.angle = 90;
+    }
+    else if((int)joy->axes[DPadY] == -1 && lastDPadYValue == 0)
+    {
+      msg.angle = 270;
+    }
 
-    hovercraftControl.power = 1;
-    hovercraftControl.x_translation = joy->axes[3];
-    hovercraftControl.y_translation = joy->axes[4];
-    hovercraftControl.rotation = joy->axes[0];
-    hovercraftControl.lift = lift;
-    hovercraftControl.red_led = joy->buttons[1];
-    hovercraftControl.green_led = joy->buttons[0];
+    msg.x_translation = joy->axes[RightJoystickX];
+    msg.y_translation = joy->axes[RightJoystickY];
+    msg.rotation = joy->axes[LeftJoystickX];
+    msg.lift = lift;
+    //msg.red_led = joy->buttons[ButtonA];
+    //msg.green_led = joy->buttons[ButtonB];
   }
-  else
+
+  for(int i = 0; i < ButtonCount; i++)
   {
-    hovercraftControl.power = 0;
+    lastButtonValues[i] = joy->buttons[i];
   }
-  control_pub.publish(hovercraftControl);
+  lastDPadXValue = (int)joy->axes[DPadX];
+  lastDPadYValue = (int)joy->axes[DPadY];
+
+  joy_pub.publish(msg);
 }
 
 int main(int argc, char** argv)

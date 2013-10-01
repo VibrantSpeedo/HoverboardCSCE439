@@ -11,14 +11,15 @@
 <node name="Hovercraft" pkg="hovercraft" type="HoverCraft"  output="screen" />
 
 <node name="JoyStick" pkg="controller" type="joystick"/>
+<node name="JoyAngleIntegrator" pkg="controller" type="joyAngleIntegrator"/>
+<node name="Arbitrator" pkg="controller" type="arbitrator"/>
+<node name="ThrusterMapping" pkg="controller" type="thrusterMapping"/>
 <node name="JoyNode" pkg="joy" type="joy_node">
 	<param name="dev" value="/dev/input/js1" />
 </node>
-
 <node name="AngularPositionPID" pkg="controller" type="angularPositionPID">
 	<param name="p_value" type="double" value="0.5"/>
 	<param name="d_value" type="double" value="5.0"/>
-	<param name="target_angle" type="double" value="90"/>
 </node>
 
 </launch>
